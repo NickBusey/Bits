@@ -1,0 +1,16 @@
+<head>
+  <title>Bits</title>
+</head>
+
+<body>
+
+  {{> hello}}
+  {{#each bits}}
+  	{{> bit}}
+  {{/each}}
+</body>
+
+<template name="hello">
+  <button id='spawnBit'>Spawn</button>
+</template>
+

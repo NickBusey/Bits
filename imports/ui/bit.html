@@ -1,0 +1,11 @@
+<template name="bit">
+	<li class="{{#if checked}}checked{{/if}}">
+	<button class="delete">&times;</button>
+       
+	<input type="checkbox" checked="{{active}}" class="toggle-checked" />
+	<div class='collapsable'> 
+		<span class="text">{{_id}}</span>
+		<span class='text'>Health: {{health}}</span>
+	</div>
+</li>
+</template>
