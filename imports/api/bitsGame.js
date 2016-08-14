@@ -33,6 +33,7 @@ export default class BitsGame {
 			this.spawnTime = this.spawnTimeDefault;
 			this.spawnBit();
 		}
+		// this.board.draw();
 	}
 	spawnSpeed() {
 		return this.spawnTickSpeed;
