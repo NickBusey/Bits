@@ -3,8 +3,8 @@
 </head>
 
 <body>
-	{{bits.length}}
-  {{> hello}}
+{{spawnTime}} - 
+{{liveBits}}
   <ul class='bitInfoWrapper'>
   {{#each bits}}
   	{{> bitInfo}}
@@ -16,8 +16,3 @@
   {{/each}}
   </div>
 </body>
-
-<template name="hello">
-  <button id='spawnBit'>Spawn</button>
-</template>
-

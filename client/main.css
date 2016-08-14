@@ -17,3 +17,7 @@
 	border: solid red 1px;
 	position: absolute;
 }
+
+.collapsable {
+	width: 300px;
+}
