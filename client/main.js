@@ -4,6 +4,7 @@ import { Bits } from '../imports/api/bits.js';
  
 import './main.html';
 import '../imports/ui/bit.js';
+import '../imports/ui/bitInfo.js';
 
 Template.body.helpers({
 	  bits() {
@@ -15,8 +16,15 @@ Template.body.helpers({
 Template.body.events({
 	  'click #spawnBit'(event) {
 		  Bits.insert({
-			  health: 100
+			  health: 100,
+			  top: 50,
+			  left: 50
 		  });
 	},
 });
 
+setInterval(function() {
+	// Gameloop
+	//
+	$('#playField div').trigger('click');
+},100);

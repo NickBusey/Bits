@@ -1,1 +1,19 @@
 /* CSS declarations go here */
+#playField {
+	height: 500px;
+	width: 500px;
+	border: solid #777 5px;
+	position: relative;
+	float: left;
+}
+
+.bitInfoWrapper {
+	float: left;
+}
+
+.bit {
+	height: 1px;
+	width: 1px;
+	border: solid red 1px;
+	position: absolute;
+}

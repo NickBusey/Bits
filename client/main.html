@@ -3,11 +3,18 @@
 </head>
 
 <body>
-
+	{{bits.length}}
   {{> hello}}
+  <ul class='bitInfoWrapper'>
+  {{#each bits}}
+  	{{> bitInfo}}
+	{{/each}}
+</ul>
+  <div id='playField'>
   {{#each bits}}
   	{{> bit}}
   {{/each}}
+  </div>
 </body>
 
 <template name="hello">
