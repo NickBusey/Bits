@@ -1,7 +1,9 @@
 import { Bits } from '../api/bits.js';
+import Board from '../ui/board.js';
 
 export default class BitsGame {
 	constructor() {
+		that = this;
 		// Time for each new spawn
 		this.spawnTimeDefault = 4000;
 		// Tracker
@@ -10,8 +12,9 @@ export default class BitsGame {
 		this.tickTime = 100;
 		// How much to remove from spawnTime each tick.
 		this.spawnTickSpeed = 100;
-
+		this.board = new Board;
 		this.gameLoop();
+		setTimeout('that.board.draw();',1000);
 	}
 	spawnBit() {
 		Bits.insert({
@@ -21,7 +24,6 @@ export default class BitsGame {
 		});
 	}
 	gameLoop() {
-		that = this;
 		setTimeout('that.gameLoop()',this.tickTime);
 		// Update bits (change this)
 		$('#playField .bit').trigger('click');
