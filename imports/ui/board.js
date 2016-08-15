@@ -1,4 +1,5 @@
 import { Template } from 'meteor/templating';
+import { Bits } from '../api/bits.js';
 
 export default class Board {
 	constructor() {
@@ -18,28 +19,50 @@ export default class Board {
 		.attr("height", this.svgSize.height);
 		var scales = this.getScale(this.gridSize, this.svgSize);
 
+		
 		this.drawCells(this.svgContainer, scales, this.map.grass, "grass");
 		this.drawCells(this.svgContainer, scales, this.map.rock, "rock");
 		this.drawCells(this.svgContainer, scales, this.map.lava, "lava");
-		this.groups = { path:this.svgContainer.append("g"),
-		position:this.svgContainer.append("g") };
+
+		this.groups = {
+			path:this.svgContainer.append("g"),
+			position:this.svgContainer.append("g"),
+			bits:this.svgContainer.append("g"),
+		};
+
 		this.mapCreated = true;
 	}
 
 	update() {
+		var that = this;
 		if (!this.mapCreated) return;
 		var scales = this.getScale(this.gridSize, this.svgSize);
-		var path = this.pickRandomPosition(this.map);
-		console.log(path);
-	    var textData = this.groups.position.selectAll("text").data([path]);
-	    textData.exit().remove();
-	    var texts = textData.enter().append("text");
-	    var textAttributes = texts
-	    .attr("x", function (d) { return scales.x(d.x + 0.5); })
-	    .attr("y", function (d) { return scales.y(d.y + 0.5); })
-	    .attr("dy", ".31em")
-	    .text(function(d,i) { return i; })
-	    .attr("class", "positionNumber");
+		this.groups.bits.selectAll("rect").remove();
+
+		// console.log(this.map.lava);
+
+		var bits = Bits.find({});
+		bits.forEach(function (bit) {
+			for (var i = that.map.lava.length - 1; i >= 0; i--) {
+				var lava = that.map.lava[i];
+				if (lava.x == bit.left && lava.y == bit.top) {
+					Bits.remove(bit._id);
+				}
+			}
+
+			var data = [{x:bit.left,y:bit.top,type:"bit"}];
+			var cells = that.groups.bits
+				.append("rect")
+				.data(data);
+
+			var cellAttributes = cells
+				.attr("x", function (d) { return scales.x(d.x); })
+				.attr("y", function (d) { return scales.y(d.y); })
+				.attr("width", function (d) { return that.squareLength; })
+				.attr("height", function (d) { return that.squareLength; })
+				.attr("class", 'bit');
+		});
+
 
 	}
 

@@ -11,14 +11,7 @@
 	float: left;
 }
 
-.bit {
-	height: 1px;
-	width: 1px;
-	border: solid red 1px;
-	position: absolute;
-}
-
-.collapsable {
+.bitInfoWrapper {
 	width: 300px;
 }
 
@@ -62,6 +55,13 @@ svg {
 	fill: #B3210B;
 	stroke-width: 1px;
 	stroke: #FF6600;
+}
+
+.bit {
+	fill: blue;
+	stroke-width: 1px;
+	stroke: #FF6600;
+	z-index: 10;
 }
 
 .position {
