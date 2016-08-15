@@ -127,6 +127,63 @@ export default class Board {
 		return grass[i];
 	}
 
+		gameLoop() {
+		setTimeout('that.gameLoop()',this.tickTime);
+		// Decrement spawn time
+		this.spawnTime = this.spawnTime-this.spawnSpeed();
+		if (this.spawnTime < 0) {
+			this.spawnTime = this.spawnTimeDefault;
+			this.spawnBit();
+		}
+		
+		var bits = Bits.find({});
+		bits.forEach(function (bit) {
+			if (bit.health < 1) {
+				Bits.remove(bit._id);
+			}
+			var bit = that.updateBitPosition(bit);
+			Bits.update(bit._id, {
+			  $set: { left: bit.left, top: bit.top, health: bit.health - 1 },
+			});
+		});
+		this.board.update();
+	}
+	spawnSpeed() {
+		return this.spawnTickSpeed;
+	}
+	updateBitPosition(bit) {
+		var that = this;
+		var rnd = Math.random();
+		if (rnd < .3) {
+			bit.left = bit.left + 1;
+		}
+		if (rnd >= .3 && rnd < .6) {
+			bit.left = bit.left - 1;
+		}
+		var rnd = Math.random();
+		if (rnd < .3) {
+			bit.top = bit.top + 1;
+		}
+		if (rnd >= .3 && rnd < .6) {
+			bit.top = bit.top - 1;
+		}
+		if (bit.left > 19) bit.left = 19;
+		if (bit.left < 1) bit.left = 1;
+		if (bit.top > 19) bit.top = 19;
+		if (bit.top < 1) bit.top = 1;
+
+		// Now check if the new location is a rock. If so, try again.
+		for (var i = that.map.rock.length - 1; i >= 0; i--) {
+			var rock = that.map.rock[i];
+			if (rock.x == bit.left && rock.y == bit.top) {
+				return updateBitPosition(bit);
+			}
+		}
+
+
+		return bit;
+	}
+
 }
 
 
