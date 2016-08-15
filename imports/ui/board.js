@@ -3,10 +3,10 @@ import { Bits } from '../api/bits.js';
 
 export default class Board {
 	constructor() {
-		this.squareLength = 20;
+		this.squareLength = 5;
 		this.circleRadius = 15;
-		this.ratios = { rock:0.05, lava:0.05 };
-		this.gridSize = { x:20, y:20 };
+		this.ratios = { rock:0.005, lava:0.005 };
+		this.gridSize = { x:100, y:100 };
 
 		this.svgSize = this.getSvgSize(this.gridSize, this.squareLength);
 		this.map = this.buildMap(this.gridSize, this.ratios);
@@ -39,21 +39,25 @@ export default class Board {
 		var scales = this.getScale(this.gridSize, this.svgSize);
 		this.groups.bits.selectAll("rect").remove();
 
-		// console.log(this.map.lava);
-
+		// Redraw all bits (this can certainly be improved)
 		var bits = Bits.find({});
 		bits.forEach(function (bit) {
 			var data = [{x:bit.left,y:bit.top,type:"bit"}];
 			var cell = that.groups.bits
 				.append("rect")
-				.data(data);
+				.data(data)
+			;
+
+			var health = Math.round(bit.health * 2.5);
 
 			var cellAttributes = cell
 				.attr("x", function (d) { return scales.x(d.x); })
 				.attr("y", function (d) { return scales.y(d.y); })
 				.attr("width", function (d) { return that.squareLength; })
 				.attr("height", function (d) { return that.squareLength; })
-				.attr("class", 'bit');
+				.attr("class", 'bit')
+				.attr("style", 'fill: rgb(0,0,'+health+');')
+			;
 
 			// Check to see if we hit lava
 			for (var i = that.map.lava.length - 1; i >= 0; i--) {
@@ -125,63 +129,6 @@ export default class Board {
 		var grass = map.grass;
 		var i = Math.ceil(Math.random() * grass.length);
 		return grass[i];
-	}
-
-		gameLoop() {
-		setTimeout('that.gameLoop()',this.tickTime);
-		// Decrement spawn time
-		this.spawnTime = this.spawnTime-this.spawnSpeed();
-		if (this.spawnTime < 0) {
-			this.spawnTime = this.spawnTimeDefault;
-			this.spawnBit();
-		}
-		
-		var bits = Bits.find({});
-		bits.forEach(function (bit) {
-			if (bit.health < 1) {
-				Bits.remove(bit._id);
-			}
-			var bit = that.updateBitPosition(bit);
-			Bits.update(bit._id, {
-			  $set: { left: bit.left, top: bit.top, health: bit.health - 1 },
-			});
-		});
-		this.board.update();
-	}
-	spawnSpeed() {
-		return this.spawnTickSpeed;
-	}
-	updateBitPosition(bit) {
-		var that = this;
-		var rnd = Math.random();
-		if (rnd < .3) {
-			bit.left = bit.left + 1;
-		}
-		if (rnd >= .3 && rnd < .6) {
-			bit.left = bit.left - 1;
-		}
-		var rnd = Math.random();
-		if (rnd < .3) {
-			bit.top = bit.top + 1;
-		}
-		if (rnd >= .3 && rnd < .6) {
-			bit.top = bit.top - 1;
-		}
-		if (bit.left > 19) bit.left = 19;
-		if (bit.left < 1) bit.left = 1;
-		if (bit.top > 19) bit.top = 19;
-		if (bit.top < 1) bit.top = 1;
-
-		// Now check if the new location is a rock. If so, try again.
-		for (var i = that.map.rock.length - 1; i >= 0; i--) {
-			var rock = that.map.rock[i];
-			if (rock.x == bit.left && rock.y == bit.top) {
-				return updateBitPosition(bit);
-			}
-		}
-
-
-		return bit;
 	}
 
 }

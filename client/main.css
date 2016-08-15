@@ -41,45 +41,17 @@ svg {
 
 .grass {
 	fill: #3CAB26;
-	stroke-width: 1px;
-	stroke: #2D801C;
 }
 
 .rock {
 	fill: #858585;
-	stroke-width: 1px;
-	stroke: #C7C7C7;
 }
 
 .lava {
 	fill: #B3210B;
-	stroke-width: 1px;
-	stroke: #FF6600;
-}
-
-.bit {
-	fill: blue;
-	stroke-width: 1px;
-	stroke: black;
 }
 
 .deadBit {
 	fill: black;
-	stroke: red;
 }
 
-.position {
-	fill: #C9EBF0;
-	stroke-width: 3px;
-	stroke: #2973F2;
-}
-
-.positionNumber {
-	fill: #0E1A9E;
-	text-anchor: middle;
-}
-
-.path {
-	stroke-width: 3px;
-	stroke: #2973F2;
-}
