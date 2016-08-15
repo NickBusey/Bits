@@ -60,8 +60,12 @@ svg {
 .bit {
 	fill: blue;
 	stroke-width: 1px;
-	stroke: #FF6600;
-	z-index: 10;
+	stroke: black;
+}
+
+.deadBit {
+	fill: black;
+	stroke: red;
 }
 
 .position {
