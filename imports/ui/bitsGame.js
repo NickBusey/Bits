@@ -26,4 +26,54 @@ export default class BitsGame {
 			left: 10,
 		});
 	}
+	gameLoop() {
+		setTimeout('that.gameLoop()',this.tickTime);
+		// Decrement spawn time
+		this.spawnTime = this.spawnTime-this.spawnSpeed();
+		if (this.spawnTime < 0) {
+			this.spawnTime = this.spawnTimeDefault;
+			this.spawnBit();
+		}
+		
+		var bits = Bits.find({});
+		bits.forEach(function (bit) {
+			if (bit.health < 1) {
+				Bits.remove(bit._id);
+			}
+			var bit = that.updateBitPosition(bit);
+			Bits.update(bit._id, {
+			  $set: { left: bit.left, top: bit.top, health: bit.health - 1 },
+			});
+		});
+		this.board.update();
+	}
+	spawnSpeed() {
+		return this.spawnTickSpeed;
+	}
+	updateBitPosition(bit) {
+		var rnd = Math.random();
+		if (rnd < .3) {
+			bit.left = bit.left + 1;
+		}
+		if (rnd >= .3 && rnd < .6) {
+			bit.left = bit.left - 1;
+		}
+		var rnd = Math.random();
+		if (rnd < .3) {
+			bit.top = bit.top + 1;
+		}
+		if (rnd >= .3 && rnd < .6) {
+			bit.top = bit.top - 1;
+		}
+
+		// Now check if the new location is a rock. If so, try again.
+		for (var i = that.board.map.rock.length - 1; i >= 0; i--) {
+			var rock = that.board.map.rock[i];
+			if (rock.x == bit.left && rock.y == bit.top) {
+				return this.updateBitPosition(bit);
+			}
+		}
+
+		return bit;
+	}
 }
