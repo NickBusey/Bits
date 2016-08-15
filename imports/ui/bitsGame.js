@@ -1,6 +1,8 @@
 import { Bits } from '../api/bits.js';
 import Board from '../ui/board.js';
 
+import './bitsGame.html';
+
 export default class BitsGame {
 	constructor() {
 		that = this;
