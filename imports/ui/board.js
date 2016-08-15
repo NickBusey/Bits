@@ -36,6 +36,7 @@ export default class Board {
 	update() {
 		var that = this;
 		if (!this.mapCreated) return;
+
 		var scales = this.getScale(this.gridSize, this.svgSize);
 		this.groups.bits.selectAll("rect").remove();
 		this.groups.foods.selectAll("rect").remove();
@@ -77,9 +78,10 @@ export default class Board {
 			// Check to see if we hit food
 			foods.forEach(function (food) {
 				if (food.left == bit.left && food.top == bit.top) {
-					bit.health = bit.health+1000;
-					bit.active = 1;
 					Foods.remove(food._id);
+					Bits.update(bit._id, {
+					  $set: { health: bit.health + 100 },
+					});
 				}
 			});
 		});
@@ -155,13 +157,6 @@ export default class Board {
 		.attr("height", function (d) { return that.squareLength; })
 		.attr("class", cssClass);
 	}
-
-	pickRandomPosition(map) {
-		var grass = map.grass;
-		var i = Math.ceil(Math.random() * grass.length);
-		return grass[i];
-	}
-
 }
 
 

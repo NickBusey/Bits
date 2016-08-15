@@ -18,7 +18,7 @@ export default class BitsGame {
 		// Tracker
 		this.spawnTime = this.spawnTimeDefault;
 		// Game tick speed
-		this.tickTime = 100;
+		this.tickTime = 200;
 
 		// How much to remove from spawnTime each tick.
 		this.spawnTickSpeed = 100;
@@ -33,6 +33,7 @@ export default class BitsGame {
 			health: this.newBitHealth,
 			top: this.randomIntFromInterval(0,this.board.gridSize.y),
 			left: this.randomIntFromInterval(0,this.board.gridSize.x),
+			age: 0
 		});
 		Foods.insert({
 			top: this.randomIntFromInterval(0,this.board.gridSize.y),
@@ -56,7 +57,7 @@ export default class BitsGame {
 			}
 			var bit = that.updateBitPosition(bit);
 			Bits.update(bit._id, {
-			  $set: { left: bit.left, top: bit.top, health: bit.health - that.healthDecay },
+			  $set: { left: bit.left, top: bit.top, health: bit.health - that.healthDecay, age: bit.age + 1 },
 			});
 		});
 		this.board.update();
