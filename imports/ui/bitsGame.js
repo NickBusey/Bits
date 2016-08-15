@@ -1,7 +1,14 @@
 import { Bits } from '../api/bits.js';
+import { Foods } from '../api/foods.js';
 import Board from '../ui/board.js';
 
 import './bitsGame.html';
+
+Template.bitsGame.helpers({
+	spawnTime() {
+		return app.spawnTime;
+    },
+});
 
 export default class BitsGame {
 	constructor() {
@@ -24,6 +31,10 @@ export default class BitsGame {
 	spawnBit() {
 		Bits.insert({
 			health: this.newBitHealth,
+			top: this.randomIntFromInterval(0,this.board.gridSize.y),
+			left: this.randomIntFromInterval(0,this.board.gridSize.x),
+		});
+		Foods.insert({
 			top: this.randomIntFromInterval(0,this.board.gridSize.y),
 			left: this.randomIntFromInterval(0,this.board.gridSize.x),
 		});

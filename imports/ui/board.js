@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Bits } from '../api/bits.js';
+import { Foods } from '../api/foods.js';
 
 export default class Board {
 	constructor() {
@@ -25,9 +26,8 @@ export default class Board {
 		this.drawCells(this.svgContainer, scales, this.map.lava, "lava");
 
 		this.groups = {
-			path:this.svgContainer.append("g"),
-			position:this.svgContainer.append("g"),
 			bits:this.svgContainer.append("g"),
+			foods:this.svgContainer.append("g"),
 		};
 
 		this.mapCreated = true;
@@ -38,8 +38,10 @@ export default class Board {
 		if (!this.mapCreated) return;
 		var scales = this.getScale(this.gridSize, this.svgSize);
 		this.groups.bits.selectAll("rect").remove();
+		this.groups.foods.selectAll("rect").remove();
 
 		// Redraw all bits (this can certainly be improved)
+		var foods = Foods.find({});
 		var bits = Bits.find({});
 		bits.forEach(function (bit) {
 			var data = [{x:bit.left,y:bit.top,type:"bit"}];
@@ -59,6 +61,10 @@ export default class Board {
 				.attr("style", 'fill: rgb(0,0,'+health+');')
 			;
 
+			if (bit.active) {
+				cell.attr("style", 'fill: rgb('+health+','+health+',0);');
+			}
+
 			// Check to see if we hit lava
 			for (var i = that.map.lava.length - 1; i >= 0; i--) {
 				var lava = that.map.lava[i];
@@ -67,6 +73,31 @@ export default class Board {
 					cell.attr("class", 'deadBit');
 				}
 			}
+
+			// Check to see if we hit food
+			foods.forEach(function (food) {
+				if (food.left == bit.left && food.top == bit.top) {
+					bit.health = bit.health+1000;
+					bit.active = 1;
+					Foods.remove(food._id);
+				}
+			});
+		});
+
+		foods.forEach(function (food) {
+			var data = [{x:food.left,y:food.top,type:"food"}];
+			var cell = that.groups.foods
+				.append("rect")
+				.data(data)
+			;
+
+			var cellAttributes = cell
+				.attr("x", function (d) { return scales.x(d.x); })
+				.attr("y", function (d) { return scales.y(d.y); })
+				.attr("width", function (d) { return that.squareLength; })
+				.attr("height", function (d) { return that.squareLength; })
+				.attr("class", 'food')
+			;
 		});
 
 

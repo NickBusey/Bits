@@ -51,6 +51,10 @@ svg {
 	fill: #B3210B;
 }
 
+.food {
+	fill: orange;
+}
+
 .deadBit {
 	fill: black;
 }
