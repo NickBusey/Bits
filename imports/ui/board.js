@@ -51,7 +51,7 @@ export default class Board {
 				.data(data)
 			;
 
-			var health = Math.round(bit.health * 2.5);
+			var health = Math.min(Math.round(bit.health * 2.55),250);
 
 			var cellAttributes = cell
 				.attr("x", function (d) { return scales.x(d.x); })
@@ -66,12 +66,23 @@ export default class Board {
 				cell.attr("style", 'fill: rgb('+health+','+health+',0);');
 			}
 
+			if (bit.shieldAge > app.newShieldTime) {
+				cell.attr('class', 'bit shield');
+			}
+
 			// Check to see if we hit lava
 			for (var i = that.map.lava.length - 1; i >= 0; i--) {
 				var lava = that.map.lava[i];
 				if (lava.x == bit.left && lava.y == bit.top) {
-					Bits.remove(bit._id);
-					cell.attr("class", 'deadBit');
+					// We hit lava. Do we have a shield? If so, drop that, otherwise, die.
+					if (bit.shieldAge > app.newShieldTime) {
+						Bits.update(bit._id, {
+						  $set: { shieldAge: 0 },
+						});
+					} else {
+						Bits.remove(bit._id);
+						cell.attr("class", 'deadBit');
+					}
 				}
 			}
 
@@ -80,7 +91,7 @@ export default class Board {
 				if (food.left == bit.left && food.top == bit.top) {
 					Foods.remove(food._id);
 					Bits.update(bit._id, {
-					  $set: { health: bit.health + 100 },
+					  $set: { health: bit.health + app.foodHealthBonus },
 					});
 				}
 			});

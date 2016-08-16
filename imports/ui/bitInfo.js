@@ -7,7 +7,10 @@ import './bitInfo.html';
 Template.bitInfo.helpers({
 	displayHealth() {
 		return Math.round(this.health);
-	}
+	},
+	shield() {
+		return (this.shieldAge > app.newShieldTime ? "Yes":"No");
+	},
 });
  
 Template.bitInfo.events({

@@ -19,3 +19,8 @@ Template.body.helpers({
     	return Bits.find({}).count();
     }
 });
+
+Template.body.onCreated(function(){
+	this.subscribe('bits');
+	this.subscribe('foods');
+});

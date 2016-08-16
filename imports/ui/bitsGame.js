@@ -8,6 +8,9 @@ Template.bitsGame.helpers({
 	spawnTime() {
 		return app.spawnTime;
     },
+    energy() {
+    	return 5;
+    }
 });
 
 export default class BitsGame {
@@ -18,26 +21,34 @@ export default class BitsGame {
 		// Tracker
 		this.spawnTime = this.spawnTimeDefault;
 		// Game tick speed
-		this.tickTime = 200;
+		this.tickTime = 100;
 
 		// How much to remove from spawnTime each tick.
 		this.spawnTickSpeed = 100;
 		this.newBitHealth = 100;
 		this.healthDecay = .3;
+		this.foodHealthBonus = 100;
+		// What age a bit should reach since spawning or losing a shield until it gains a new one.
+		this.newShieldTime = 200;
 		this.board = new Board;
 		this.gameLoop();
 		setTimeout('that.board.drawMap();',1000);
 	}
 	spawnBit() {
+		console.log(Meteor.userId());
+		// return;
 		Bits.insert({
 			health: this.newBitHealth,
-			top: this.randomIntFromInterval(0,this.board.gridSize.y),
-			left: this.randomIntFromInterval(0,this.board.gridSize.x),
-			age: 0
+			top: this.randomIntFromInterval(1,this.board.gridSize.y-1),
+			left: this.randomIntFromInterval(1,this.board.gridSize.x-1),
+			age: 0,
+			shieldAge: 0,
+			userId: Meteor.userId(),
 		});
 		Foods.insert({
-			top: this.randomIntFromInterval(0,this.board.gridSize.y),
-			left: this.randomIntFromInterval(0,this.board.gridSize.x),
+			top: this.randomIntFromInterval(1,this.board.gridSize.y-1),
+			left: this.randomIntFromInterval(1,this.board.gridSize.x-1),
+			userId: Meteor.userId(),
 		});
 	}
 	gameLoop() {
@@ -57,7 +68,13 @@ export default class BitsGame {
 			}
 			var bit = that.updateBitPosition(bit);
 			Bits.update(bit._id, {
-			  $set: { left: bit.left, top: bit.top, health: bit.health - that.healthDecay, age: bit.age + 1 },
+			  $set: { 
+			  	left: bit.left, 
+			  	top: bit.top, 
+			  	health: bit.health - that.healthDecay, 
+			  	age: bit.age + 1,
+			  	shieldAge: bit.shieldAge + 1,
+			 },
 			});
 		});
 		this.board.update();
@@ -68,19 +85,18 @@ export default class BitsGame {
 	updateBitPosition(bit) {
 		var that = this;
 		var rnd = Math.random();
-		var left = 0;
-		var top = 0;
-		if (rnd < .3) {
+		var left = bit.left;
+		var top = bit.top;
+		if (rnd < .25) {
 			left = bit.left + 1;
 		}
-		if (rnd >= .3 && rnd < .6) {
+		if (rnd >= .25 && rnd < .5) {
 			left = bit.left - 1;
 		}
-		var rnd = Math.random();
-		if (rnd < .3) {
+		if (rnd >= .5 && rnd < .75) {
 			top = bit.top + 1;
 		}
-		if (rnd >= .3 && rnd < .6) {
+		if (rnd >= .75) {
 			top = bit.top - 1;
 		}
 

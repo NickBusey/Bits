@@ -3,10 +3,11 @@
 </head>
 
 <body>
-<a href='https://github.com/NickBusey/Bits'>Bits on GitHub</a>
-{{spawnTime}} - {{liveBits}}
+{{> loginButtons}}
+<h1><a href='https://github.com/NickBusey/Bits'>Bits on GitHub</a></h1>
 {{> bitsGame}}
 <ul class='bitInfoWrapper'>
+  Bits: {{liveBits}}
   {{#each bits}}
     {{> bitInfo}}
   {{/each}}
