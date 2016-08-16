@@ -21,7 +21,7 @@ export default class BitsGame {
 		// Tracker
 		this.spawnTime = this.spawnTimeDefault;
 		// Game tick speed
-		this.tickTime = 100;
+		this.tickTime = 500;
 
 		// How much to remove from spawnTime each tick.
 		this.spawnTickSpeed = 100;
@@ -35,8 +35,6 @@ export default class BitsGame {
 		setTimeout('that.board.drawMap();',1000);
 	}
 	spawnBit() {
-		console.log(Meteor.userId());
-		// return;
 		Bits.insert({
 			health: this.newBitHealth,
 			top: this.randomIntFromInterval(1,this.board.gridSize.y-1),

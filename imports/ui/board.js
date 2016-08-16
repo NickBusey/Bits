@@ -38,29 +38,58 @@ export default class Board {
 		if (!this.mapCreated) return;
 
 		var scales = this.getScale(this.gridSize, this.svgSize);
-		this.groups.bits.selectAll("rect").remove();
-		this.groups.foods.selectAll("rect").remove();
+		// this.groups.bits.selectAll("rect").remove();
+		// this.groups.foods.selectAll("rect").remove();
 
-		// Redraw all bits (this can certainly be improved)
 		var foods = Foods.find({});
 		var bits = Bits.find({});
+
+		var map = { foods:[], bits:[] };
+		for (x = 0; x < this.gridSize.x; x++) {
+			map.foods[x] = [];
+			map.bits[x] = [];
+		}
+
+		foods.forEach(function (food) {
+			map.foods[food.left][food.top]=food._id;
+		});
+		
+		var t = d3.transition()
+		    .duration(app.tickTime)
+		    .ease(d3.easeLinear);
+
 		bits.forEach(function (bit) {
+			map.bits[bit.left][bit.top]=1;
 			var data = [{x:bit.left,y:bit.top,type:"bit"}];
-			var cell = that.groups.bits
-				.append("rect")
-				.data(data)
-			;
 
 			var health = Math.min(Math.round(bit.health * 2.55),250);
 
-			var cellAttributes = cell
-				.attr("x", function (d) { return scales.x(d.x); })
-				.attr("y", function (d) { return scales.y(d.y); })
-				.attr("width", function (d) { return that.squareLength; })
-				.attr("height", function (d) { return that.squareLength; })
-				.attr("class", 'bit')
-				.attr("style", 'fill: rgb(0,0,'+health+');')
-			;
+			
+
+			var cell = that.groups.bits.select('#bit'+bit._id);
+			if (cell.size()>0) {
+				// We have a cell drawn, don't redraw it, animate a move
+				cell
+					.data(data)
+					.transition(t)
+					.attr("x", function (d) { return scales.x(d.x); })
+					.attr("y", function (d) { return scales.y(d.y); })
+					.attr("style", 'fill: rgb(0,0,'+health+');')
+				;
+			} else {
+				cell = that.groups.bits
+					.append("rect")
+					.data(data)
+					.attr("x", function (d) { return scales.x(d.x); })
+					.attr("y", function (d) { return scales.y(d.y); })
+					.attr("width", function (d) { return that.squareLength; })
+					.attr("height", function (d) { return that.squareLength; })
+					.attr("class", 'bit')
+					.attr("style", 'fill: rgb(0,0,'+health+');')
+					.attr("id", 'bit'+bit._id)
+				;
+			}
+
 
 			if (bit.active) {
 				cell.attr("style", 'fill: rgb('+health+','+health+',0);');
@@ -81,20 +110,16 @@ export default class Board {
 						});
 					} else {
 						Bits.remove(bit._id);
-						cell.attr("class", 'deadBit');
+						cell.remove();
 					}
 				}
 			}
-
-			// Check to see if we hit food
-			foods.forEach(function (food) {
-				if (food.left == bit.left && food.top == bit.top) {
-					Foods.remove(food._id);
-					Bits.update(bit._id, {
-					  $set: { health: bit.health + app.foodHealthBonus },
-					});
-				}
-			});
+			if (map.foods[bit.left][bit.top]!=0) {
+				Foods.remove(map.foods[bit.left][bit.top]);
+				Bits.update(bit._id, {
+				  $set: { health: bit.health + app.foodHealthBonus },
+				});
+			}
 		});
 
 		foods.forEach(function (food) {
@@ -149,8 +174,8 @@ export default class Board {
 	}
 
 	getScale(gridSize, svgSize) {
-		var xScale = d3.scale.linear().domain([0,gridSize.x]).range([0,svgSize.width]);
-		var yScale = d3.scale.linear().domain([0,gridSize.y]).range([0,svgSize.height]);
+		var xScale = d3.scaleLinear().domain([0,gridSize.x]).range([0,svgSize.width]);
+		var yScale = d3.scaleLinear().domain([0,gridSize.y]).range([0,svgSize.height]);
 		return { x:xScale, y:yScale };
 	}
 
